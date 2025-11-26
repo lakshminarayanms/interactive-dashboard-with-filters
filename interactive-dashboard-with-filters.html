@@ -1,4 +1,4 @@
-# interactive-dashboard-v2-final-colors.html
+# interactive-dashboard-final-fixed.html
 
 ```html
 <!DOCTYPE html>
@@ -13,7 +13,7 @@
             --color-cream-100: #fffff d;
             --color-slate-900: #134252;
             --color-slate-500: #626c71;
-            --color-teal-500: #2180 8d;
+            --color-teal-500: #208 08d;
             --color-teal-600: #1d7480;
             --color-border: #aeaaaa;
             --color-success: #2e7d32;
@@ -28,8 +28,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--color-cream-50);
-            color: var(--color-slate-900);
+            background-color: #fcfcf9;
+            color: #134252;
             padding: 20px;
         }
 
@@ -49,11 +49,11 @@
         h1 {
             font-size: 32px;
             margin-bottom: 8px;
-            color: var(--color-slate-900);
+            color: #134252;
         }
 
         .subtitle {
-            color: var(--color-slate-500);
+            color: #626c71;
             font-size: 14px;
         }
 
@@ -74,7 +74,7 @@
 
         input[type="text"], button, select {
             padding: 12px 16px;
-            border: 1px solid var(--color-border);
+            border: 1px solid #aeaaaa;
             border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
@@ -86,17 +86,19 @@
         }
 
         button {
-            background: var(--color-teal-500);
+            background: #2180 8d;
             color: white;
             border: none;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            padding: 12px 20px;
         }
 
         button:hover {
-            background: var(--color-teal-600);
+            background: #1d7480;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         button:active {
@@ -109,6 +111,7 @@
             margin-bottom: 20px;
             display: none;
             animation: slideIn 0.3s ease;
+            font-weight: 500;
         }
 
         .message.show {
@@ -125,6 +128,12 @@
             background: #ffebee;
             color: #c62828;
             border-left: 4px solid #c62828;
+        }
+
+        .message.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #1565c0;
         }
 
         @keyframes slideIn {
@@ -146,18 +155,18 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             text-align: center;
-            border-top: 4px solid;
+            border-left: 5px solid;
             transition: all 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
 
-        /* Stat card colors - colorful! */
+        /* Card 1 - Blue for Total Templates */
         .stat-card:nth-child(1) {
-            border-top-color: #3b82f6;
+            border-left-color: #3b82f6;
             background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
         }
 
@@ -165,8 +174,9 @@
             color: #1e40af;
         }
 
+        /* Card 2 - Green for Active Templates */
         .stat-card:nth-child(2) {
-            border-top-color: #10b981;
+            border-left-color: #10b981;
             background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
         }
 
@@ -174,8 +184,9 @@
             color: #065f46;
         }
 
+        /* Card 3 - Red for Inactive Templates */
         .stat-card:nth-child(3) {
-            border-top-color: #ef4444;
+            border-left-color: #ef4444;
             background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
         }
 
@@ -183,8 +194,9 @@
             color: #991b1b;
         }
 
+        /* Card 4 - Orange for Total Accounts */
         .stat-card:nth-child(4) {
-            border-top-color: #f59e0b;
+            border-left-color: #f59e0b;
             background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
         }
 
@@ -193,14 +205,14 @@
         }
 
         .stat-value {
-            font-size: 42px;
+            font-size: 48px;
             font-weight: 700;
             margin-bottom: 8px;
         }
 
         .stat-label {
             font-size: 14px;
-            color: var(--color-slate-500);
+            color: #626c71;
             font-weight: 500;
         }
 
@@ -232,7 +244,7 @@
             font-weight: 600;
             margin: 0;
             flex: 1;
-            color: var(--color-slate-900);
+            color: #134252;
         }
 
         .chart-filters {
@@ -251,7 +263,7 @@
         .filter-label {
             font-size: 13px;
             font-weight: 500;
-            color: var(--color-slate-500);
+            color: #626c71;
             white-space: nowrap;
         }
 
@@ -262,16 +274,17 @@
         .filter-select select {
             width: 100%;
             padding: 8px 12px;
-            border: 1px solid var(--color-border);
+            border: 1px solid #aeaaaa;
             border-radius: 6px;
             font-size: 13px;
             cursor: pointer;
+            background-color: white;
         }
 
         .bar-chart {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             max-height: 450px;
             overflow-y: auto;
         }
@@ -289,15 +302,16 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             font-weight: 500;
-            color: var(--color-slate-900);
+            color: #134252;
         }
 
         .bar-container {
             flex: 1;
-            height: 32px;
+            height: 34px;
             background: #f0f0f0;
             border-radius: 6px;
             overflow: hidden;
+            border: 1px solid #e0e0e0;
         }
 
         /* CUSTOMER CHART - BLUE GRADIENT */
@@ -306,6 +320,10 @@
             color: white;
             font-weight: 600;
             font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
         }
 
         /* TEMPLATE CHART - GREEN GRADIENT */
@@ -314,14 +332,14 @@
             color: white;
             font-weight: 600;
             font-size: 12px;
-        }
-
-        .bar-fill {
-            height: 100%;
             display: flex;
             align-items: center;
             justify-content: flex-end;
             padding-right: 10px;
+        }
+
+        .bar-fill {
+            height: 100%;
             min-width: 60px;
         }
 
@@ -337,6 +355,7 @@
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 16px;
+            color: #134252;
         }
 
         .filter-controls {
@@ -349,17 +368,17 @@
             flex: 1;
             min-width: 250px;
             padding: 12px 16px;
-            border: 1px solid var(--color-border);
+            border: 1px solid #aeaaaa;
             border-radius: 8px;
             font-size: 14px;
         }
 
         .filter-btn {
             padding: 10px 20px;
-            border: 1px solid var(--color-border);
+            border: 1px solid #aeaaaa;
             border-radius: 8px;
             background: white;
-            color: var(--color-slate-900);
+            color: #134252;
             font-size: 14px;
             cursor: pointer;
             font-weight: 600;
@@ -367,14 +386,14 @@
         }
 
         .filter-btn:hover {
-            border-color: var(--color-teal-500);
-            color: var(--color-teal-500);
+            border-color: #2180 8d;
+            color: #2180 8d;
         }
 
         .filter-btn.active {
-            background: var(--color-teal-500);
+            background: #2180 8d;
             color: white;
-            border-color: var(--color-teal-500);
+            border-color: #2180 8d;
         }
 
         .table-container {
@@ -396,9 +415,10 @@
             text-align: left;
             font-weight: 600;
             font-size: 13px;
-            border-bottom: 1px solid var(--color-border);
+            border-bottom: 1px solid #aeaaaa;
             cursor: pointer;
             user-select: none;
+            color: #134252;
         }
 
         th:hover {
@@ -415,6 +435,7 @@
             padding: 14px 16px;
             font-size: 13px;
             border-bottom: 1px solid #eee;
+            color: #134252;
         }
 
         tr:hover {
@@ -423,7 +444,7 @@
 
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
@@ -473,7 +494,7 @@
         <div class="input-section">
             <div class="input-group">
                 <input type="text" id="csvUrl" placeholder="Enter Google Sheets URL" value="https://docs.google.com/spreadsheets/d/1DmMRnPCBGwYYRC6nj2adKoROUehnL_rr9kMl3amd0ww/edit">
-                <button onclick="loadData()">📥 Load Data</button>
+                <button onclick="loadData()" style="background: #2180 8d;">📥 Load Data</button>
                 <button onclick="exportData()" style="background: #4CAF50;">📤 Export CSV</button>
             </div>
             <div id="message" class="message"></div>
