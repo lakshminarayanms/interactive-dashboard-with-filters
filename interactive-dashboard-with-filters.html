@@ -1,0 +1,738 @@
+# interactive-dashboard-with-filters.html - Updated Dashboard with Interactive Filters
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Account Dashboard</title>
+    <style>
+        :root {
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: rgba(192, 21, 47, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        input, button, select {
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .chart-filter {
+            min-width: 200px;
+        }
+
+        .chart-filter select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bar-label {
+            min-width: 200px;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 28px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            min-width: 50px;
+        }
+
+        .bar-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filters-section h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: var(--color-text);
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: #f0f0f0;
+        }
+
+        .sort-icon {
+            margin-left: 4px;
+            font-size: 10px;
+            opacity: 0.5;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .badge-inactive {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .error {
+            background: #FFEBEE;
+            color: var(--color-error);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            input {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Customer Account Dashboard</h1>
+            <p class="subtitle">Real-time analytics from Google Sheets</p>
+        </header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="csvUrl" placeholder="Enter CSV URL or Google Sheets URL" value="https://raw.githubusercontent.com/lakshminarayanms/interactive-dashboard/refs/heads/main/Custom%20template%20list.csv">
+                <button onclick="loadData()">📥 Load Data</button>
+                <button onclick="exportData()" style="background: #4CAF50;">📥 Export CSV</button>
+            </div>
+
+            <div id="message"></div>
+
+            <div id="statsContainer" class="stats-grid" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTemplates">0</div>
+                    <div class="stat-label">Total Templates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="activeTemplates">0</div>
+                    <div class="stat-label">Active Templates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="inactiveTemplates">0</div>
+                    <div class="stat-label">Inactive Templates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAccounts">0</div>
+                    <div class="stat-label">Total Accounts</div>
+                </div>
+            </div>
+
+            <div id="chartsContainer" style="display: none;">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h2 class="chart-title">🏢 Top 15 Customers by Account Count</h2>
+                            <div class="chart-filter">
+                                <select id="customerFilter" onchange="renderCharts()">
+                                    <option value="">-- All Customers --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bar-chart" id="customerChart"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h2 class="chart-title">📈 Top 10 Templates by Account Count</h2>
+                            <div class="chart-filter">
+                                <select id="templateFilter" onchange="renderCharts()">
+                                    <option value="">-- All Templates --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bar-chart" id="templateChart"></div>
+                    </div>
+                </div>
+
+                <div class="filters-section">
+                    <h3>🔍 Search & Filter</h3>
+                    <div class="filter-controls">
+                        <input type="text" id="searchBox" class="search-box" placeholder="Search templates..." onkeyup="filterData()">
+                        <button class="filter-btn active" data-filter="all" onclick="setFilter(this)">All</button>
+                        <button class="filter-btn" data-filter="active" onclick="setFilter(this)">Active</button>
+                        <button class="filter-btn" data-filter="inactive" onclick="setFilter(this)">Inactive</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-sort="Customer Alias">Customer Alias <span class="sort-icon">▼</span></th>
+                                <th data-sort="Template Name">Template Name <span class="sort-icon">▼</span></th>
+                                <th data-sort="Total Accounts">Total Accounts <span class="sort-icon">▼</span></th>
+                                <th data-sort="Accounts">Status <span class="sort-icon">▼</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allData = [];
+        let currentFilter = 'all';
+        let currentSort = { field: null, ascending: true };
+        let allCustomers = [];
+        let allTemplates = [];
+
+        async function loadData() {
+            const url = document.getElementById('csvUrl').value;
+            const messageDiv = document.getElementById('message');
+
+            if (!url) {
+                showMessage('Please enter a URL', 'error');
+                return;
+            }
+
+            showMessage('Loading...', 'info');
+
+            try {
+                let csvUrl = url;
+                
+                if (url.includes('docs.google.com/spreadsheets')) {
+                    if (url.includes('/d/')) {
+                        const sheetId = url.split('/d/')[1].split('/')[0];
+                        csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+                    }
+                }
+
+                const response = await fetch(csvUrl);
+                const csv = await response.text();
+
+                const lines = csv.trim().split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+
+                allData = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim()) {
+                        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                        allData.push({
+                            'Customer Alias': values[0] || 'N/A',
+                            'Template Name': values[1] || 'N/A',
+                            'Total Accounts': parseInt(values[2]) || 0,
+                            'Accounts': values[3] || 'No accounts'
+                        });
+                    }
+                }
+
+                updateStats();
+                populateFilters();
+                renderCharts();
+                filterData();
+
+                document.getElementById('statsContainer').style.display = 'grid';
+                document.getElementById('chartsContainer').style.display = 'block';
+
+                showMessage(`✅ Successfully loaded ${allData.length} records`, 'success');
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function updateStats() {
+            const total = allData.length;
+            const active = allData.filter(d => d['Total Accounts'] > 0).length;
+            const inactive = total - active;
+            const totalAccounts = allData.reduce((sum, d) => sum + d['Total Accounts'], 0);
+
+            document.getElementById('totalTemplates').textContent = total;
+            document.getElementById('activeTemplates').textContent = active;
+            document.getElementById('inactiveTemplates').textContent = inactive;
+            document.getElementById('totalAccounts').textContent = totalAccounts.toLocaleString();
+        }
+
+        function populateFilters() {
+            // Get unique customers
+            allCustomers = [...new Set(allData.map(d => d['Customer Alias']))].sort();
+            const customerSelect = document.getElementById('customerFilter');
+            allCustomers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer;
+                option.textContent = customer;
+                customerSelect.appendChild(option);
+            });
+
+            // Get unique templates
+            allTemplates = [...new Set(allData.map(d => d['Template Name']))].sort();
+            const templateSelect = document.getElementById('templateFilter');
+            allTemplates.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template;
+                option.textContent = template;
+                templateSelect.appendChild(option);
+            });
+        }
+
+        function aggregateCustomers() {
+            const customerMap = {};
+            
+            allData.forEach(item => {
+                const accounts = item['Accounts'];
+                if (accounts !== 'No accounts') {
+                    const parts = accounts.split(';');
+                    parts.forEach(part => {
+                        if (part.includes('=')) {
+                            const [name, count] = part.split('=');
+                            const customer = name.trim();
+                            const num = parseInt(count.trim()) || 0;
+                            customerMap[customer] = (customerMap[customer] || 0) + num;
+                        }
+                    });
+                }
+            });
+
+            return Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
+        }
+
+        function renderCharts() {
+            const selectedCustomer = document.getElementById('customerFilter').value;
+            const selectedTemplate = document.getElementById('templateFilter').value;
+
+            // Customer chart
+            const customers = aggregateCustomers().slice(0, 15);
+            
+            let filteredCustomers = customers;
+            if (selectedCustomer) {
+                filteredCustomers = customers.filter(c => c[0] === selectedCustomer);
+            }
+
+            if (filteredCustomers.length > 0) {
+                const maxCount = Math.max(...filteredCustomers.map(c => c[1]));
+                const html = filteredCustomers.map(([name, count]) => `
+                    <div class="bar-item">
+                        <div class="bar-label">${name}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${(count / maxCount) * 100}%">
+                                <span class="bar-value">${count.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('customerChart').innerHTML = html;
+            }
+
+            // Template chart
+            let templates = allData.filter(t => t['Total Accounts'] > 0)
+                .sort((a, b) => b['Total Accounts'] - a['Total Accounts'])
+                .slice(0, 10);
+
+            if (selectedTemplate) {
+                templates = templates.filter(t => t['Template Name'] === selectedTemplate);
+            }
+
+            if (templates.length > 0) {
+                const maxCount = Math.max(...templates.map(t => t['Total Accounts']));
+                const html = templates.map(item => `
+                    <div class="bar-item">
+                        <div class="bar-label">${item['Template Name'].substring(0, 50)}</div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: ${(item['Total Accounts'] / maxCount) * 100}%">
+                                <span class="bar-value">${item['Total Accounts'].toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('templateChart').innerHTML = html;
+            }
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            
+            let filtered = allData.filter(item => {
+                const matchesSearch = (
+                    item['Customer Alias'].toLowerCase().includes(searchTerm) ||
+                    item['Template Name'].toLowerCase().includes(searchTerm)
+                );
+
+                const matchesFilter = currentFilter === 'all' ||
+                    (currentFilter === 'active' && item['Total Accounts'] > 0) ||
+                    (currentFilter === 'inactive' && item['Total Accounts'] === 0);
+
+                return matchesSearch && matchesFilter;
+            });
+
+            if (currentSort.field) {
+                filtered.sort((a, b) => {
+                    let aVal = a[currentSort.field];
+                    let bVal = b[currentSort.field];
+
+                    if (typeof aVal === 'string') {
+                        aVal = aVal.toLowerCase();
+                        bVal = bVal.toLowerCase();
+                    }
+
+                    if (currentSort.ascending) {
+                        return aVal > bVal ? 1 : -1;
+                    } else {
+                        return aVal < bVal ? 1 : -1;
+                    }
+                });
+            }
+
+            renderTable(filtered);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td>${item['Customer Alias']}</td>
+                    <td>${item['Template Name']}</td>
+                    <td>${item['Total Accounts']}</td>
+                    <td>
+                        <span class="badge ${item['Total Accounts'] > 0 ? 'badge-active' : 'badge-inactive'}">
+                            ${item['Total Accounts'] > 0 ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function setFilter(btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            filterData();
+        }
+
+        function exportData() {
+            try {
+                let csv = 'Customer Alias,Template Name,Total Accounts,Accounts\n';
+                allData.forEach(item => {
+                    csv += `"${item['Customer Alias']}","${item['Template Name']}",${item['Total Accounts']},"${item['Accounts']}"\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `dashboard_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+            } catch (error) {
+                showMessage(`❌ Export failed: ${error.message}`, 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const div = document.getElementById('message');
+            div.textContent = text;
+            div.className = type;
+            if (type !== 'error') {
+                setTimeout(() => div.textContent = '', 3000);
+            }
+        }
+
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const field = th.dataset.sort;
+                if (currentSort.field === field) {
+                    currentSort.ascending = !currentSort.ascending;
+                } else {
+                    currentSort.field = field;
+                    currentSort.ascending = true;
+                }
+                
+                document.querySelectorAll('th .sort-icon').forEach(icon => icon.textContent = '▼');
+                th.querySelector('.sort-icon').textContent = currentSort.ascending ? '▲' : '▼';
+                
+                filterData();
+            });
+        });
+
+        renderCharts();
+        filterData();
+    </script>
+</body>
+</html>
+```
