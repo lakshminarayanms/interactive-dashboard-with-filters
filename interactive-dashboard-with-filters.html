@@ -1,4 +1,4 @@
-# interactive-dashboard-v2-complete.html
+# interactive-dashboard-v2-final-colors.html
 
 ```html
 <!DOCTYPE html>
@@ -13,7 +13,7 @@
             --color-cream-100: #fffff d;
             --color-slate-900: #134252;
             --color-slate-500: #626c71;
-            --color-teal-500: #208 08d;
+            --color-teal-500: #2180 8d;
             --color-teal-600: #1d7480;
             --color-border: #aeaaaa;
             --color-success: #2e7d32;
@@ -132,6 +132,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* COLORFUL STATS CARDS */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -145,18 +146,62 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             text-align: center;
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        /* Stat card colors - colorful! */
+        .stat-card:nth-child(1) {
+            border-top-color: #3b82f6;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+        }
+
+        .stat-card:nth-child(1) .stat-value {
+            color: #1e40af;
+        }
+
+        .stat-card:nth-child(2) {
+            border-top-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            color: #065f46;
+        }
+
+        .stat-card:nth-child(3) {
+            border-top-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+        }
+
+        .stat-card:nth-child(3) .stat-value {
+            color: #991b1b;
+        }
+
+        .stat-card:nth-child(4) {
+            border-top-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+        }
+
+        .stat-card:nth-child(4) .stat-value {
+            color: #92400e;
         }
 
         .stat-value {
             font-size: 42px;
             font-weight: 700;
-            color: var(--color-teal-500);
             margin-bottom: 8px;
         }
 
         .stat-label {
             font-size: 14px;
             color: var(--color-slate-500);
+            font-weight: 500;
         }
 
         .charts-grid {
@@ -187,6 +232,7 @@
             font-weight: 600;
             margin: 0;
             flex: 1;
+            color: var(--color-slate-900);
         }
 
         .chart-filters {
@@ -243,27 +289,40 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             font-weight: 500;
+            color: var(--color-slate-900);
         }
 
         .bar-container {
             flex: 1;
-            height: 30px;
+            height: 32px;
             background: #f0f0f0;
             border-radius: 6px;
             overflow: hidden;
         }
 
+        /* CUSTOMER CHART - BLUE GRADIENT */
+        #customerChart .bar-fill {
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* TEMPLATE CHART - GREEN GRADIENT */
+        #templateChart .bar-fill {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
         .bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--color-teal-500), var(--color-teal-600));
             display: flex;
             align-items: center;
             justify-content: flex-end;
             padding-right: 10px;
             min-width: 60px;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
         }
 
         .filters-section {
@@ -408,7 +467,7 @@
     <div class="container">
         <header>
             <h1>📊 Customer Account Dashboard</h1>
-            <p class="subtitle">Real-time analytics from Google Sheets - V2.0 with Dynamic Filters</p>
+            <p class="subtitle">Real-time analytics from Google Sheets - V2.0 with Dynamic Filters & Colors</p>
         </header>
 
         <div class="input-section">
@@ -613,7 +672,6 @@
         }
 
         function populateFilters() {
-            // Get unique customers
             allCustomers = [...new Set(allData.map(d => d['Customer Alias']))].sort();
             const customerSelect = document.getElementById('customerFilter');
             customerSelect.innerHTML = '<option value="">-- All Customers --</option>';
@@ -624,7 +682,6 @@
                 customerSelect.appendChild(option);
             });
 
-            // Get unique templates
             allTemplates = [...new Set(allData.map(d => d['Template Name']))].sort();
             const templateSelect = document.getElementById('templateFilter');
             templateSelect.innerHTML = '<option value="">-- All Templates --</option>';
@@ -818,7 +875,6 @@
             });
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'l') {
                 e.preventDefault();
