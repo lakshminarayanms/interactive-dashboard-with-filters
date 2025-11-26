@@ -1,4 +1,4 @@
-# interactive-dashboard-with-filters-v2.html - Updated with Dynamic Count Filters
+# interactive-dashboard-v2-complete.html
 
 ```html
 <!DOCTYPE html>
@@ -6,36 +6,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Account Dashboard</title>
+    <title>Customer Account Dashboard - V2.0</title>
     <style>
         :root {
-            --color-cream-50: rgba(252, 252, 249, 1);
-            --color-cream-100: rgba(255, 255, 253, 1);
-            --color-gray-200: rgba(245, 245, 245, 1);
-            --color-gray-300: rgba(167, 169, 169, 1);
-            --color-slate-500: rgba(98, 108, 113, 1);
-            --color-slate-900: rgba(19, 52, 59, 1);
-            --color-teal-500: rgba(33, 128, 141, 1);
-            --color-teal-600: rgba(29, 116, 128, 1);
-            --color-charcoal-700: rgba(31, 33, 33, 1);
-            --color-charcoal-800: rgba(38, 40, 40, 1);
-            --color-brown-600-rgb: 94, 82, 64;
-            --color-teal-500-rgb: 33, 128, 141;
-            
-            --color-bg-1: rgba(59, 130, 246, 0.08);
-            --color-bg-2: rgba(245, 158, 11, 0.08);
-            --color-bg-3: rgba(34, 197, 94, 0.08);
-            --color-bg-4: rgba(239, 68, 68, 0.08);
-            
-            --color-background: var(--color-cream-50);
-            --color-surface: var(--color-cream-100);
-            --color-text: var(--color-slate-900);
-            --color-text-secondary: var(--color-slate-500);
-            --color-primary: var(--color-teal-500);
-            --color-primary-hover: var(--color-teal-600);
-            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-            --color-error: rgba(192, 21, 47, 1);
+            --color-cream-50: #fcfcf9;
+            --color-cream-100: #fffff d;
+            --color-slate-900: #134252;
+            --color-slate-500: #626c71;
+            --color-teal-500: #208 08d;
+            --color-teal-600: #1d7480;
+            --color-border: #aeaaaa;
+            --color-success: #2e7d32;
+            --color-danger: #c62828;
         }
 
         * {
@@ -46,14 +28,14 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text);
+            background-color: var(--color-cream-50);
+            color: var(--color-slate-900);
+            padding: 20px;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         header {
@@ -61,16 +43,17 @@
             padding: 30px;
             border-radius: 8px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         h1 {
             font-size: 32px;
             margin-bottom: 8px;
+            color: var(--color-slate-900);
         }
 
         .subtitle {
-            color: #666;
+            color: var(--color-slate-500);
             font-size: 14px;
         }
 
@@ -79,7 +62,7 @@
             padding: 24px;
             border-radius: 8px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .input-group {
@@ -89,28 +72,64 @@
             flex-wrap: wrap;
         }
 
-        input, button, select {
+        input[type="text"], button, select {
             padding: 12px 16px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             font-size: 14px;
+            font-family: inherit;
         }
 
-        input {
+        input[type="text"] {
             flex: 1;
-            min-width: 250px;
+            min-width: 300px;
         }
 
         button {
-            background: var(--color-primary);
+            background: var(--color-teal-500);
             color: white;
             border: none;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         button:hover {
-            background: var(--color-primary-hover);
+            background: var(--color-teal-600);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .stats-grid {
@@ -124,19 +143,20 @@
             background: white;
             padding: 24px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
         }
 
         .stat-value {
-            font-size: 36px;
+            font-size: 42px;
             font-weight: 700;
-            color: var(--color-primary);
+            color: var(--color-teal-500);
             margin-bottom: 8px;
         }
 
         .stat-label {
             font-size: 14px;
-            color: #666;
+            color: var(--color-slate-500);
         }
 
         .charts-grid {
@@ -150,15 +170,15 @@
             background: white;
             padding: 24px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .chart-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
@@ -166,27 +186,34 @@
             font-size: 18px;
             font-weight: 600;
             margin: 0;
+            flex: 1;
         }
 
-        .filter-controls-inline {
+        .chart-filters {
             display: flex;
             gap: 12px;
-            align-items: center;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .filter-label {
             font-size: 13px;
-            color: #666;
             font-weight: 500;
+            color: var(--color-slate-500);
             white-space: nowrap;
         }
 
-        .chart-filter {
-            min-width: 120px;
+        .filter-select {
+            min-width: 140px;
         }
 
-        .chart-filter select {
+        .filter-select select {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid var(--color-border);
@@ -199,7 +226,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 400px;
+            max-height: 450px;
             overflow-y: auto;
         }
 
@@ -210,16 +237,17 @@
         }
 
         .bar-label {
-            min-width: 200px;
+            min-width: 180px;
             font-size: 13px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            font-weight: 500;
         }
 
         .bar-container {
             flex: 1;
-            height: 28px;
+            height: 30px;
             background: #f0f0f0;
             border-radius: 6px;
             overflow: hidden;
@@ -227,18 +255,15 @@
 
         .bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+            background: linear-gradient(90deg, var(--color-teal-500), var(--color-teal-600));
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 8px;
-            min-width: 50px;
-        }
-
-        .bar-value {
-            font-size: 12px;
-            font-weight: 600;
+            padding-right: 10px;
+            min-width: 60px;
             color: white;
+            font-weight: 600;
+            font-size: 12px;
         }
 
         .filters-section {
@@ -246,19 +271,18 @@
             padding: 24px;
             border-radius: 8px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .filters-section h3 {
             font-size: 16px;
-            margin-bottom: 16px;
             font-weight: 600;
+            margin-bottom: 16px;
         }
 
         .filter-controls {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
@@ -266,39 +290,40 @@
             flex: 1;
             min-width: 250px;
             padding: 12px 16px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             font-size: 14px;
         }
 
         .filter-btn {
             padding: 10px 20px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             background: white;
-            color: var(--color-text);
+            color: var(--color-slate-900);
             font-size: 14px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         .filter-btn:hover {
-            border-color: var(--color-primary);
-            color: var(--color-primary);
+            border-color: var(--color-teal-500);
+            color: var(--color-teal-500);
         }
 
         .filter-btn.active {
-            background: var(--color-primary);
+            background: var(--color-teal-500);
             color: white;
-            border-color: var(--color-primary);
+            border-color: var(--color-teal-500);
         }
 
         .table-container {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             overflow: hidden;
+            margin-bottom: 30px;
         }
 
         table {
@@ -312,7 +337,7 @@
             text-align: left;
             font-weight: 600;
             font-size: 13px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--color-border);
             cursor: pointer;
             user-select: none;
         }
@@ -339,36 +364,24 @@
 
         .badge {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 12px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .badge-active {
-            background: #E8F5E9;
-            color: #2E7D32;
+            background: #e8f5e9;
+            color: #2e7d32;
         }
 
         .badge-inactive {
-            background: #FFEBEE;
-            color: #C62828;
+            background: #ffebee;
+            color: #c62828;
         }
 
-        .error {
-            background: #FFEBEE;
-            color: var(--color-error);
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .success {
-            background: #E8F5E9;
-            color: #2E7D32;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .hidden {
+            display: none !important;
         }
 
         @media (max-width: 768px) {
@@ -378,14 +391,14 @@
             .input-group {
                 flex-direction: column;
             }
-            input {
+            input[type="text"] {
                 min-width: 100%;
             }
             .chart-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            .filter-controls-inline {
+            .chart-filters {
                 width: 100%;
             }
         }
@@ -395,19 +408,18 @@
     <div class="container">
         <header>
             <h1>📊 Customer Account Dashboard</h1>
-            <p class="subtitle">Real-time analytics from Google Sheets</p>
+            <p class="subtitle">Real-time analytics from Google Sheets - V2.0 with Dynamic Filters</p>
         </header>
 
         <div class="input-section">
             <div class="input-group">
-                <input type="text" id="csvUrl" placeholder="Enter CSV URL or Google Sheets URL" value="https://raw.githubusercontent.com/lakshminarayanms/interactive-dashboard/refs/heads/main/Custom%20template%20list.csv">
+                <input type="text" id="csvUrl" placeholder="Enter Google Sheets URL" value="https://docs.google.com/spreadsheets/d/1DmMRnPCBGwYYRC6nj2adKoROUehnL_rr9kMl3amd0ww/edit">
                 <button onclick="loadData()">📥 Load Data</button>
-                <button onclick="exportData()" style="background: #4CAF50;">📥 Export CSV</button>
+                <button onclick="exportData()" style="background: #4CAF50;">📤 Export CSV</button>
             </div>
+            <div id="message" class="message"></div>
 
-            <div id="message"></div>
-
-            <div id="statsContainer" class="stats-grid" style="display: none;">
+            <div id="statsContainer" class="stats-grid hidden">
                 <div class="stat-card">
                     <div class="stat-value" id="totalTemplates">0</div>
                     <div class="stat-label">Total Templates</div>
@@ -426,58 +438,68 @@
                 </div>
             </div>
 
-            <div id="chartsContainer" style="display: none;">
+            <div id="chartsContainer" class="hidden">
                 <div class="charts-grid">
+                    <!-- CUSTOMER CHART WITH FILTERS -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h2 class="chart-title">🏢 Top Customers by Account Count</h2>
-                            <div class="filter-controls-inline">
-                                <label class="filter-label">Show Top:</label>
-                                <div class="chart-filter">
-                                    <select id="customerCountFilter" onchange="renderCharts()">
-                                        <option value="5">5 Customers</option>
-                                        <option value="10">10 Customers</option>
-                                        <option value="15" selected>15 Customers</option>
-                                        <option value="20">20 Customers</option>
-                                        <option value="25">25 Customers</option>
-                                        <option value="30">30 Customers</option>
-                                        <option value="50">50 Customers</option>
-                                        <option value="all">All Customers</option>
-                                    </select>
+                            <div class="chart-filters">
+                                <div class="filter-group">
+                                    <label class="filter-label">Show Top:</label>
+                                    <div class="filter-select">
+                                        <select id="customerCountFilter" onchange="renderCharts()">
+                                            <option value="5">5 Customers</option>
+                                            <option value="10">10 Customers</option>
+                                            <option value="15" selected>15 Customers</option>
+                                            <option value="20">20 Customers</option>
+                                            <option value="25">25 Customers</option>
+                                            <option value="30">30 Customers</option>
+                                            <option value="50">50 Customers</option>
+                                            <option value="all">All Customers</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <label class="filter-label">Filter By:</label>
-                                <div class="chart-filter">
-                                    <select id="customerFilter" onchange="renderCharts()">
-                                        <option value="">-- All Customers --</option>
-                                    </select>
+                                <div class="filter-group">
+                                    <label class="filter-label">Filter By:</label>
+                                    <div class="filter-select">
+                                        <select id="customerFilter" onchange="renderCharts()">
+                                            <option value="">-- All Customers --</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="bar-chart" id="customerChart"></div>
                     </div>
 
+                    <!-- TEMPLATE CHART WITH FILTERS -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h2 class="chart-title">📈 Top Templates by Account Count</h2>
-                            <div class="filter-controls-inline">
-                                <label class="filter-label">Show Top:</label>
-                                <div class="chart-filter">
-                                    <select id="templateCountFilter" onchange="renderCharts()">
-                                        <option value="5">5 Templates</option>
-                                        <option value="10" selected>10 Templates</option>
-                                        <option value="15">15 Templates</option>
-                                        <option value="20">20 Templates</option>
-                                        <option value="25">25 Templates</option>
-                                        <option value="30">30 Templates</option>
-                                        <option value="50">50 Templates</option>
-                                        <option value="all">All Templates</option>
-                                    </select>
+                            <div class="chart-filters">
+                                <div class="filter-group">
+                                    <label class="filter-label">Show Top:</label>
+                                    <div class="filter-select">
+                                        <select id="templateCountFilter" onchange="renderCharts()">
+                                            <option value="5">5 Templates</option>
+                                            <option value="10" selected>10 Templates</option>
+                                            <option value="15">15 Templates</option>
+                                            <option value="20">20 Templates</option>
+                                            <option value="25">25 Templates</option>
+                                            <option value="30">30 Templates</option>
+                                            <option value="50">50 Templates</option>
+                                            <option value="all">All Templates</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <label class="filter-label">Filter By:</label>
-                                <div class="chart-filter">
-                                    <select id="templateFilter" onchange="renderCharts()">
-                                        <option value="">-- All Templates --</option>
-                                    </select>
+                                <div class="filter-group">
+                                    <label class="filter-label">Filter By:</label>
+                                    <div class="filter-select">
+                                        <select id="templateFilter" onchange="renderCharts()">
+                                            <option value="">-- All Templates --</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -485,6 +507,7 @@
                     </div>
                 </div>
 
+                <!-- SEARCH & FILTER SECTION -->
                 <div class="filters-section">
                     <h3>🔍 Search & Filter</h3>
                     <div class="filter-controls">
@@ -495,6 +518,7 @@
                     </div>
                 </div>
 
+                <!-- DATA TABLE -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -502,7 +526,7 @@
                                 <th data-sort="Customer Alias">Customer Alias <span class="sort-icon">▼</span></th>
                                 <th data-sort="Template Name">Template Name <span class="sort-icon">▼</span></th>
                                 <th data-sort="Total Accounts">Total Accounts <span class="sort-icon">▼</span></th>
-                                <th data-sort="Accounts">Status <span class="sort-icon">▼</span></th>
+                                <th data-sort="Status">Status <span class="sort-icon">▼</span></th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
@@ -521,14 +545,13 @@
 
         async function loadData() {
             const url = document.getElementById('csvUrl').value;
-            const messageDiv = document.getElementById('message');
-
+            
             if (!url) {
                 showMessage('Please enter a URL', 'error');
                 return;
             }
 
-            showMessage('Loading...', 'info');
+            showMessage('Loading data...', 'info');
 
             try {
                 let csvUrl = url;
@@ -541,12 +564,16 @@
                 }
 
                 const response = await fetch(csvUrl);
+                if (!response.ok) throw new Error('Failed to fetch');
+                
                 const csv = await response.text();
-
                 const lines = csv.trim().split('\n');
-                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+                
+                if (lines.length < 2) throw new Error('CSV is empty');
 
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
                 allData = [];
+
                 for (let i = 1; i < lines.length; i++) {
                     if (lines[i].trim()) {
                         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
@@ -554,7 +581,7 @@
                             'Customer Alias': values[0] || 'N/A',
                             'Template Name': values[1] || 'N/A',
                             'Total Accounts': parseInt(values[2]) || 0,
-                            'Accounts': values[3] || 'No accounts'
+                            'Accounts': values[3] || ''
                         });
                     }
                 }
@@ -564,10 +591,10 @@
                 renderCharts();
                 filterData();
 
-                document.getElementById('statsContainer').style.display = 'grid';
-                document.getElementById('chartsContainer').style.display = 'block';
+                document.getElementById('statsContainer').classList.remove('hidden');
+                document.getElementById('chartsContainer').classList.remove('hidden');
+                showMessage(`✅ Loaded ${allData.length} records successfully!`, 'success');
 
-                showMessage(`✅ Successfully loaded ${allData.length} records`, 'success');
             } catch (error) {
                 showMessage(`❌ Error: ${error.message}`, 'error');
             }
@@ -611,10 +638,9 @@
 
         function aggregateCustomers() {
             const customerMap = {};
-            
             allData.forEach(item => {
                 const accounts = item['Accounts'];
-                if (accounts !== 'No accounts') {
+                if (accounts) {
                     const parts = accounts.split(';');
                     parts.forEach(part => {
                         if (part.includes('=')) {
@@ -626,7 +652,6 @@
                     });
                 }
             });
-
             return Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
         }
 
@@ -636,16 +661,11 @@
             const customerCount = document.getElementById('customerCountFilter').value;
             const templateCount = document.getElementById('templateCountFilter').value;
 
-            // Customer chart
+            // CUSTOMER CHART
             const customers = aggregateCustomers();
-            
-            let filteredCustomers = customers;
-            
-            // Apply count limit
             const limit = customerCount === 'all' ? customers.length : parseInt(customerCount);
-            filteredCustomers = customers.slice(0, limit);
+            let filteredCustomers = customers.slice(0, limit);
             
-            // Apply customer filter
             if (selectedCustomer) {
                 filteredCustomers = filteredCustomers.filter(c => c[0] === selectedCustomer);
             }
@@ -657,25 +677,21 @@
                         <div class="bar-label">${name}</div>
                         <div class="bar-container">
                             <div class="bar-fill" style="width: ${(count / maxCount) * 100}%">
-                                <span class="bar-value">${count.toLocaleString()}</span>
+                                ${count.toLocaleString()}
                             </div>
                         </div>
                     </div>
                 `).join('');
                 document.getElementById('customerChart').innerHTML = html;
-            } else {
-                document.getElementById('customerChart').innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No data available</div>';
             }
 
-            // Template chart
+            // TEMPLATE CHART
             let templates = allData.filter(t => t['Total Accounts'] > 0)
                 .sort((a, b) => b['Total Accounts'] - a['Total Accounts']);
-
-            // Apply count limit
+            
             const templateLimit = templateCount === 'all' ? templates.length : parseInt(templateCount);
             templates = templates.slice(0, templateLimit);
             
-            // Apply template filter
             if (selectedTemplate) {
                 templates = templates.filter(t => t['Template Name'] === selectedTemplate);
             }
@@ -687,14 +703,12 @@
                         <div class="bar-label">${item['Template Name'].substring(0, 50)}</div>
                         <div class="bar-container">
                             <div class="bar-fill" style="width: ${(item['Total Accounts'] / maxCount) * 100}%">
-                                <span class="bar-value">${item['Total Accounts'].toLocaleString()}</span>
+                                ${item['Total Accounts'].toLocaleString()}
                             </div>
                         </div>
                     </div>
                 `).join('');
                 document.getElementById('templateChart').innerHTML = html;
-            } else {
-                document.getElementById('templateChart').innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No data available</div>';
             }
         }
 
@@ -760,9 +774,10 @@
 
         function exportData() {
             try {
-                let csv = 'Customer Alias,Template Name,Total Accounts,Accounts\n';
+                let csv = 'Customer Alias,Template Name,Total Accounts,Status\n';
                 allData.forEach(item => {
-                    csv += `"${item['Customer Alias']}","${item['Template Name']}",${item['Total Accounts']},"${item['Accounts']}"\n`;
+                    const status = item['Total Accounts'] > 0 ? 'Active' : 'Inactive';
+                    csv += `"${item['Customer Alias']}","${item['Template Name']}",${item['Total Accounts']},"${status}"\n`;
                 });
 
                 const blob = new Blob([csv], { type: 'text/csv' });
@@ -771,6 +786,7 @@
                 a.href = url;
                 a.download = `dashboard_${new Date().toISOString().slice(0, 10)}.csv`;
                 a.click();
+                showMessage('✅ CSV exported successfully!', 'success');
             } catch (error) {
                 showMessage(`❌ Export failed: ${error.message}`, 'error');
             }
@@ -779,9 +795,9 @@
         function showMessage(text, type) {
             const div = document.getElementById('message');
             div.textContent = text;
-            div.className = type;
+            div.className = `message show ${type}`;
             if (type !== 'error') {
-                setTimeout(() => div.textContent = '', 3000);
+                setTimeout(() => div.classList.remove('show'), 3000);
             }
         }
 
@@ -802,8 +818,17 @@
             });
         });
 
-        renderCharts();
-        filterData();
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                document.getElementById('csvUrl').focus();
+            }
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportData();
+            }
+        });
     </script>
 </body>
 </html>
