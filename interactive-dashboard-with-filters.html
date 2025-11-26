@@ -1,4 +1,4 @@
-# interactive-dashboard-with-filters.html - Updated Dashboard with Interactive Filters
+# interactive-dashboard-with-filters-v2.html - Updated with Dynamic Count Filters
 
 ```html
 <!DOCTYPE html>
@@ -159,6 +159,7 @@
             align-items: center;
             margin-bottom: 20px;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .chart-title {
@@ -167,8 +168,22 @@
             margin: 0;
         }
 
+        .filter-controls-inline {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
         .chart-filter {
-            min-width: 200px;
+            min-width: 120px;
         }
 
         .chart-filter select {
@@ -366,6 +381,13 @@
             input {
                 min-width: 100%;
             }
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .filter-controls-inline {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -408,11 +430,27 @@
                 <div class="charts-grid">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h2 class="chart-title">🏢 Top 15 Customers by Account Count</h2>
-                            <div class="chart-filter">
-                                <select id="customerFilter" onchange="renderCharts()">
-                                    <option value="">-- All Customers --</option>
-                                </select>
+                            <h2 class="chart-title">🏢 Top Customers by Account Count</h2>
+                            <div class="filter-controls-inline">
+                                <label class="filter-label">Show Top:</label>
+                                <div class="chart-filter">
+                                    <select id="customerCountFilter" onchange="renderCharts()">
+                                        <option value="5">5 Customers</option>
+                                        <option value="10">10 Customers</option>
+                                        <option value="15" selected>15 Customers</option>
+                                        <option value="20">20 Customers</option>
+                                        <option value="25">25 Customers</option>
+                                        <option value="30">30 Customers</option>
+                                        <option value="50">50 Customers</option>
+                                        <option value="all">All Customers</option>
+                                    </select>
+                                </div>
+                                <label class="filter-label">Filter By:</label>
+                                <div class="chart-filter">
+                                    <select id="customerFilter" onchange="renderCharts()">
+                                        <option value="">-- All Customers --</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="bar-chart" id="customerChart"></div>
@@ -420,11 +458,27 @@
 
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h2 class="chart-title">📈 Top 10 Templates by Account Count</h2>
-                            <div class="chart-filter">
-                                <select id="templateFilter" onchange="renderCharts()">
-                                    <option value="">-- All Templates --</option>
-                                </select>
+                            <h2 class="chart-title">📈 Top Templates by Account Count</h2>
+                            <div class="filter-controls-inline">
+                                <label class="filter-label">Show Top:</label>
+                                <div class="chart-filter">
+                                    <select id="templateCountFilter" onchange="renderCharts()">
+                                        <option value="5">5 Templates</option>
+                                        <option value="10" selected>10 Templates</option>
+                                        <option value="15">15 Templates</option>
+                                        <option value="20">20 Templates</option>
+                                        <option value="25">25 Templates</option>
+                                        <option value="30">30 Templates</option>
+                                        <option value="50">50 Templates</option>
+                                        <option value="all">All Templates</option>
+                                    </select>
+                                </div>
+                                <label class="filter-label">Filter By:</label>
+                                <div class="chart-filter">
+                                    <select id="templateFilter" onchange="renderCharts()">
+                                        <option value="">-- All Templates --</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="bar-chart" id="templateChart"></div>
@@ -535,6 +589,7 @@
             // Get unique customers
             allCustomers = [...new Set(allData.map(d => d['Customer Alias']))].sort();
             const customerSelect = document.getElementById('customerFilter');
+            customerSelect.innerHTML = '<option value="">-- All Customers --</option>';
             allCustomers.forEach(customer => {
                 const option = document.createElement('option');
                 option.value = customer;
@@ -545,6 +600,7 @@
             // Get unique templates
             allTemplates = [...new Set(allData.map(d => d['Template Name']))].sort();
             const templateSelect = document.getElementById('templateFilter');
+            templateSelect.innerHTML = '<option value="">-- All Templates --</option>';
             allTemplates.forEach(template => {
                 const option = document.createElement('option');
                 option.value = template;
@@ -577,13 +633,21 @@
         function renderCharts() {
             const selectedCustomer = document.getElementById('customerFilter').value;
             const selectedTemplate = document.getElementById('templateFilter').value;
+            const customerCount = document.getElementById('customerCountFilter').value;
+            const templateCount = document.getElementById('templateCountFilter').value;
 
             // Customer chart
-            const customers = aggregateCustomers().slice(0, 15);
+            const customers = aggregateCustomers();
             
             let filteredCustomers = customers;
+            
+            // Apply count limit
+            const limit = customerCount === 'all' ? customers.length : parseInt(customerCount);
+            filteredCustomers = customers.slice(0, limit);
+            
+            // Apply customer filter
             if (selectedCustomer) {
-                filteredCustomers = customers.filter(c => c[0] === selectedCustomer);
+                filteredCustomers = filteredCustomers.filter(c => c[0] === selectedCustomer);
             }
 
             if (filteredCustomers.length > 0) {
@@ -599,13 +663,19 @@
                     </div>
                 `).join('');
                 document.getElementById('customerChart').innerHTML = html;
+            } else {
+                document.getElementById('customerChart').innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No data available</div>';
             }
 
             // Template chart
             let templates = allData.filter(t => t['Total Accounts'] > 0)
-                .sort((a, b) => b['Total Accounts'] - a['Total Accounts'])
-                .slice(0, 10);
+                .sort((a, b) => b['Total Accounts'] - a['Total Accounts']);
 
+            // Apply count limit
+            const templateLimit = templateCount === 'all' ? templates.length : parseInt(templateCount);
+            templates = templates.slice(0, templateLimit);
+            
+            // Apply template filter
             if (selectedTemplate) {
                 templates = templates.filter(t => t['Template Name'] === selectedTemplate);
             }
@@ -623,6 +693,8 @@
                     </div>
                 `).join('');
                 document.getElementById('templateChart').innerHTML = html;
+            } else {
+                document.getElementById('templateChart').innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No data available</div>';
             }
         }
 
