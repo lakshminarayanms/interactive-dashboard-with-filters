@@ -1,6 +1,5 @@
-# interactive-dashboard-final-fixed.html
+interactive-dashboard-UPDATED.html
 
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,18 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Account Dashboard - V2.0</title>
     <style>
-        :root {
-            --color-cream-50: #fcfcf9;
-            --color-cream-100: #fffff d;
-            --color-slate-900: #134252;
-            --color-slate-500: #626c71;
-            --color-teal-500: #208 08d;
-            --color-teal-600: #1d7480;
-            --color-border: #aeaaaa;
-            --color-success: #2e7d32;
-            --color-danger: #c62828;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -70,39 +57,52 @@
             gap: 12px;
             margin-bottom: 16px;
             flex-wrap: wrap;
-        }
-
-        input[type="text"], button, select {
-            padding: 12px 16px;
-            border: 1px solid #aeaaaa;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
+            align-items: center;
         }
 
         input[type="text"] {
             flex: 1;
             min-width: 300px;
+            padding: 12px 16px;
+            border: 1px solid #aeaaaa;
+            border-radius: 8px;
+            font-size: 14px;
         }
 
         button {
-            background: #2180 8d;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
             padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            white-space: nowrap;
         }
 
-        button:hover {
-            background: #1d7480;
+        .btn-load {
+            background-color: #2180 8d;
+            visibility: visible !important;
+            display: inline-block !important;
+        }
+
+        .btn-load:hover {
+            background-color: #1d7480;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        button:active {
-            transform: translateY(0);
+        .btn-export {
+            background-color: #4CAF50;
+            visibility: visible !important;
+            display: inline-block !important;
+        }
+
+        .btn-export:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .message {
@@ -141,7 +141,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* COLORFUL STATS CARDS */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -164,7 +163,6 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
 
-        /* Card 1 - Blue for Total Templates */
         .stat-card:nth-child(1) {
             border-left-color: #3b82f6;
             background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
@@ -174,7 +172,6 @@
             color: #1e40af;
         }
 
-        /* Card 2 - Green for Active Templates */
         .stat-card:nth-child(2) {
             border-left-color: #10b981;
             background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
@@ -184,7 +181,6 @@
             color: #065f46;
         }
 
-        /* Card 3 - Red for Inactive Templates */
         .stat-card:nth-child(3) {
             border-left-color: #ef4444;
             background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
@@ -194,7 +190,6 @@
             color: #991b1b;
         }
 
-        /* Card 4 - Orange for Total Accounts */
         .stat-card:nth-child(4) {
             border-left-color: #f59e0b;
             background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
@@ -314,7 +309,6 @@
             border: 1px solid #e0e0e0;
         }
 
-        /* CUSTOMER CHART - BLUE GRADIENT */
         #customerChart .bar-fill {
             background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
@@ -324,9 +318,9 @@
             align-items: center;
             justify-content: flex-end;
             padding-right: 10px;
+            height: 100%;
         }
 
-        /* TEMPLATE CHART - GREEN GRADIENT */
         #templateChart .bar-fill {
             background: linear-gradient(90deg, #10b981 0%, #059669 100%);
             color: white;
@@ -336,11 +330,7 @@
             align-items: center;
             justify-content: flex-end;
             padding-right: 10px;
-        }
-
-        .bar-fill {
             height: 100%;
-            min-width: 60px;
         }
 
         .filters-section {
@@ -362,6 +352,7 @@
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .search-box {
@@ -383,6 +374,8 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            visibility: visible !important;
+            display: inline-block !important;
         }
 
         .filter-btn:hover {
@@ -488,14 +481,14 @@
     <div class="container">
         <header>
             <h1>📊 Customer Account Dashboard</h1>
-            <p class="subtitle">Real-time analytics from Google Sheets - V2.0 with Dynamic Filters & Colors</p>
+            <p class="subtitle">Real-time analytics from Google Sheets</p>
         </header>
 
         <div class="input-section">
             <div class="input-group">
                 <input type="text" id="csvUrl" placeholder="Enter Google Sheets URL" value="https://docs.google.com/spreadsheets/d/1DmMRnPCBGwYYRC6nj2adKoROUehnL_rr9kMl3amd0ww/edit">
-                <button onclick="loadData()" style="background: #2180 8d;">📥 Load Data</button>
-                <button onclick="exportData()" style="background: #4CAF50;">📤 Export CSV</button>
+                <button class="btn-load" onclick="loadData()">📥 Load Data</button>
+                <button class="btn-export" onclick="exportData()">📤 Export CSV</button>
             </div>
             <div id="message" class="message"></div>
 
@@ -520,7 +513,6 @@
 
             <div id="chartsContainer" class="hidden">
                 <div class="charts-grid">
-                    <!-- CUSTOMER CHART WITH FILTERS -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h2 class="chart-title">🏢 Top Customers by Account Count</h2>
@@ -553,7 +545,6 @@
                         <div class="bar-chart" id="customerChart"></div>
                     </div>
 
-                    <!-- TEMPLATE CHART WITH FILTERS -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h2 class="chart-title">📈 Top Templates by Account Count</h2>
@@ -587,7 +578,6 @@
                     </div>
                 </div>
 
-                <!-- SEARCH & FILTER SECTION -->
                 <div class="filters-section">
                     <h3>🔍 Search & Filter</h3>
                     <div class="filter-controls">
@@ -598,13 +588,12 @@
                     </div>
                 </div>
 
-                <!-- DATA TABLE -->
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th data-sort="Customer Alias">Customer Alias <span class="sort-icon">▼</span></th>
                                 <th data-sort="Template Name">Template Name <span class="sort-icon">▼</span></th>
+                                <th data-sort="Customer Alias">Customer Alias <span class="sort-icon">▼</span></th>
                                 <th data-sort="Total Accounts">Total Accounts <span class="sort-icon">▼</span></th>
                                 <th data-sort="Status">Status <span class="sort-icon">▼</span></th>
                             </tr>
@@ -657,12 +646,34 @@
                 for (let i = 1; i < lines.length; i++) {
                     if (lines[i].trim()) {
                         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-                        allData.push({
-                            'Customer Alias': values[0] || 'N/A',
-                            'Template Name': values[1] || 'N/A',
-                            'Total Accounts': parseInt(values[2]) || 0,
-                            'Accounts': values[3] || ''
-                        });
+                        
+                        // Parse Accounts column to get individual customers
+                        const accountsStr = values[3] || '';
+                        const accountsMap = {};
+                        
+                        if (accountsStr) {
+                            const parts = accountsStr.split(';');
+                            parts.forEach(part => {
+                                if (part.includes('=')) {
+                                    const [name, count] = part.split('=');
+                                    const customerName = name.trim();
+                                    const accountCount = parseInt(count.trim()) || 0;
+                                    accountsMap[customerName] = accountCount;
+                                }
+                            });
+                        }
+                        
+                        // Create a record for each customer in the accounts
+                        if (Object.keys(accountsMap).length > 0) {
+                            Object.entries(accountsMap).forEach(([customer, count]) => {
+                                allData.push({
+                                    'Template Name': values[1] || 'N/A',
+                                    'Customer Alias': customer,
+                                    'Total Accounts': count,
+                                    'Status': count > 0 ? 'Active' : 'Inactive'
+                                });
+                            });
+                        }
                     }
                 }
 
@@ -681,9 +692,9 @@
         }
 
         function updateStats() {
-            const total = allData.length;
+            const total = [...new Set(allData.map(d => d['Template Name']))].length;
             const active = allData.filter(d => d['Total Accounts'] > 0).length;
-            const inactive = total - active;
+            const inactive = allData.filter(d => d['Total Accounts'] === 0).length;
             const totalAccounts = allData.reduce((sum, d) => sum + d['Total Accounts'], 0);
 
             document.getElementById('totalTemplates').textContent = total;
@@ -714,33 +725,23 @@
             });
         }
 
-        function aggregateCustomers() {
-            const customerMap = {};
-            allData.forEach(item => {
-                const accounts = item['Accounts'];
-                if (accounts) {
-                    const parts = accounts.split(';');
-                    parts.forEach(part => {
-                        if (part.includes('=')) {
-                            const [name, count] = part.split('=');
-                            const customer = name.trim();
-                            const num = parseInt(count.trim()) || 0;
-                            customerMap[customer] = (customerMap[customer] || 0) + num;
-                        }
-                    });
-                }
-            });
-            return Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
-        }
-
         function renderCharts() {
             const selectedCustomer = document.getElementById('customerFilter').value;
             const selectedTemplate = document.getElementById('templateFilter').value;
             const customerCount = document.getElementById('customerCountFilter').value;
             const templateCount = document.getElementById('templateCountFilter').value;
 
-            // CUSTOMER CHART
-            const customers = aggregateCustomers();
+            // Customer chart - aggregate by customer
+            const customerMap = {};
+            allData.forEach(item => {
+                if (!selectedTemplate || item['Template Name'] === selectedTemplate) {
+                    const customer = item['Customer Alias'];
+                    const count = item['Total Accounts'];
+                    customerMap[customer] = (customerMap[customer] || 0) + count;
+                }
+            });
+
+            let customers = Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
             const limit = customerCount === 'all' ? customers.length : parseInt(customerCount);
             let filteredCustomers = customers.slice(0, limit);
             
@@ -763,25 +764,32 @@
                 document.getElementById('customerChart').innerHTML = html;
             }
 
-            // TEMPLATE CHART
-            let templates = allData.filter(t => t['Total Accounts'] > 0)
-                .sort((a, b) => b['Total Accounts'] - a['Total Accounts']);
-            
+            // Template chart
+            const templateMap = {};
+            allData.forEach(item => {
+                if (!selectedCustomer || item['Customer Alias'] === selectedCustomer) {
+                    const template = item['Template Name'];
+                    const count = item['Total Accounts'];
+                    templateMap[template] = (templateMap[template] || 0) + count;
+                }
+            });
+
+            let templates = Object.entries(templateMap).sort((a, b) => b[1] - a[1]);
             const templateLimit = templateCount === 'all' ? templates.length : parseInt(templateCount);
             templates = templates.slice(0, templateLimit);
             
             if (selectedTemplate) {
-                templates = templates.filter(t => t['Template Name'] === selectedTemplate);
+                templates = templates.filter(t => t[0] === selectedTemplate);
             }
 
             if (templates.length > 0) {
-                const maxCount = Math.max(...templates.map(t => t['Total Accounts']));
-                const html = templates.map(item => `
+                const maxCount = Math.max(...templates.map(t => t[1]));
+                const html = templates.map(([name, count]) => `
                     <div class="bar-item">
-                        <div class="bar-label">${item['Template Name'].substring(0, 50)}</div>
+                        <div class="bar-label">${name.substring(0, 50)}</div>
                         <div class="bar-container">
-                            <div class="bar-fill" style="width: ${(item['Total Accounts'] / maxCount) * 100}%">
-                                ${item['Total Accounts'].toLocaleString()}
+                            <div class="bar-fill" style="width: ${(count / maxCount) * 100}%">
+                                ${count.toLocaleString()}
                             </div>
                         </div>
                     </div>
@@ -831,8 +839,8 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = data.map(item => `
                 <tr>
-                    <td>${item['Customer Alias']}</td>
                     <td>${item['Template Name']}</td>
+                    <td>${item['Customer Alias']}</td>
                     <td>${item['Total Accounts']}</td>
                     <td>
                         <span class="badge ${item['Total Accounts'] > 0 ? 'badge-active' : 'badge-inactive'}">
@@ -852,10 +860,9 @@
 
         function exportData() {
             try {
-                let csv = 'Customer Alias,Template Name,Total Accounts,Status\n';
+                let csv = 'Template Name,Customer Alias,Total Accounts,Status\n';
                 allData.forEach(item => {
-                    const status = item['Total Accounts'] > 0 ? 'Active' : 'Inactive';
-                    csv += `"${item['Customer Alias']}","${item['Template Name']}",${item['Total Accounts']},"${status}"\n`;
+                    csv += `"${item['Template Name']}","${item['Customer Alias']}",${item['Total Accounts']},"${item['Status']}"\n`;
                 });
 
                 const blob = new Blob([csv], { type: 'text/csv' });
@@ -909,4 +916,3 @@
     </script>
 </body>
 </html>
-```
