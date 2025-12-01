@@ -1,11 +1,9 @@
-interactive-dashboard-UPDATED.html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Account Dashboard - V2.0</title>
+    <title>Customer Account Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -52,25 +50,47 @@ interactive-dashboard-UPDATED.html
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .input-group {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            align-items: center;
+        .csv-input-group {
+            margin-bottom: 20px;
         }
 
-        input[type="text"] {
-            flex: 1;
-            min-width: 300px;
-            padding: 12px 16px;
-            border: 1px solid #aeaaaa;
-            border-radius: 8px;
+        .csv-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #134252;
             font-size: 14px;
         }
 
+        #csvInput {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px 16px;
+            border: 2px solid #aeaaaa;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+            visibility: visible !important;
+            display: block !important;
+        }
+
+        #csvInput:focus {
+            outline: none;
+            border-color: #2180 8d;
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            align-items: center;
+        }
+
         button {
-            padding: 12px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
             font-size: 14px;
@@ -79,15 +99,15 @@ interactive-dashboard-UPDATED.html
             transition: all 0.3s;
             color: white;
             white-space: nowrap;
-        }
-
-        .btn-load {
-            background-color: #2180 8d;
             visibility: visible !important;
             display: inline-block !important;
         }
 
-        .btn-load:hover {
+        .btn-parse {
+            background-color: #2180 8d;
+        }
+
+        .btn-parse:hover {
             background-color: #1d7480;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -95,8 +115,6 @@ interactive-dashboard-UPDATED.html
 
         .btn-export {
             background-color: #4CAF50;
-            visibility: visible !important;
-            display: inline-block !important;
         }
 
         .btn-export:hover {
@@ -105,13 +123,18 @@ interactive-dashboard-UPDATED.html
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
+        .btn-export:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .message {
             padding: 16px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-top: 16px;
+            font-weight: 500;
             display: none;
             animation: slideIn 0.3s ease;
-            font-weight: 500;
         }
 
         .message.show {
@@ -461,12 +484,6 @@ interactive-dashboard-UPDATED.html
             .charts-grid {
                 grid-template-columns: 1fr;
             }
-            .input-group {
-                flex-direction: column;
-            }
-            input[type="text"] {
-                min-width: 100%;
-            }
             .chart-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -485,10 +502,13 @@ interactive-dashboard-UPDATED.html
         </header>
 
         <div class="input-section">
-            <div class="input-group">
-                <input type="text" id="csvUrl" placeholder="Enter Google Sheets URL" value="https://docs.google.com/spreadsheets/d/1DmMRnPCBGwYYRC6nj2adKoROUehnL_rr9kMl3amd0ww/edit">
-                <button class="btn-load" onclick="loadData()">📥 Load Data</button>
-                <button class="btn-export" onclick="exportData()">📤 Export CSV</button>
+            <div class="csv-input-group">
+                <label class="csv-label">📋 Paste CSV Data from Google Sheet:</label>
+                <textarea id="csvInput" placeholder="Copy all data from Google Sheet and paste here..."></textarea>
+                <div class="button-group">
+                    <button class="btn-parse" onclick="parseCSVData()">📊 Parse CSV Data</button>
+                    <button class="btn-export" id="exportBtn" onclick="exportData()" disabled>📤 Export CSV</button>
+                </div>
             </div>
             <div id="message" class="message"></div>
 
@@ -532,14 +552,6 @@ interactive-dashboard-UPDATED.html
                                         </select>
                                     </div>
                                 </div>
-                                <div class="filter-group">
-                                    <label class="filter-label">Filter By:</label>
-                                    <div class="filter-select">
-                                        <select id="customerFilter" onchange="renderCharts()">
-                                            <option value="">-- All Customers --</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="bar-chart" id="customerChart"></div>
@@ -564,14 +576,6 @@ interactive-dashboard-UPDATED.html
                                         </select>
                                     </div>
                                 </div>
-                                <div class="filter-group">
-                                    <label class="filter-label">Filter By:</label>
-                                    <div class="filter-select">
-                                        <select id="templateFilter" onchange="renderCharts()">
-                                            <option value="">-- All Templates --</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="bar-chart" id="templateChart"></div>
@@ -581,7 +585,7 @@ interactive-dashboard-UPDATED.html
                 <div class="filters-section">
                     <h3>🔍 Search & Filter</h3>
                     <div class="filter-controls">
-                        <input type="text" id="searchBox" class="search-box" placeholder="Search templates..." onkeyup="filterData()">
+                        <input type="text" id="searchBox" class="search-box" placeholder="Search templates or customers..." onkeyup="filterData()">
                         <button class="filter-btn active" data-filter="all" onclick="setFilter(this)">All</button>
                         <button class="filter-btn" data-filter="active" onclick="setFilter(this)">Active</button>
                         <button class="filter-btn" data-filter="inactive" onclick="setFilter(this)">Inactive</button>
@@ -592,9 +596,9 @@ interactive-dashboard-UPDATED.html
                     <table>
                         <thead>
                             <tr>
-                                <th data-sort="Template Name">Template Name <span class="sort-icon">▼</span></th>
                                 <th data-sort="Customer Alias">Customer Alias <span class="sort-icon">▼</span></th>
-                                <th data-sort="Total Accounts">Total Accounts <span class="sort-icon">▼</span></th>
+                                <th data-sort="Template Name">Template Name <span class="sort-icon">▼</span></th>
+                                <th data-sort="Account Count">Account Count <span class="sort-icon">▼</span></th>
                                 <th data-sort="Status">Status <span class="sort-icon">▼</span></th>
                             </tr>
                         </thead>
@@ -609,149 +613,130 @@ interactive-dashboard-UPDATED.html
         let allData = [];
         let currentFilter = 'all';
         let currentSort = { field: null, ascending: true };
-        let allCustomers = [];
-        let allTemplates = [];
 
-        async function loadData() {
-            const url = document.getElementById('csvUrl').value;
-            
-            if (!url) {
-                showMessage('Please enter a URL', 'error');
+        // Auto-focus textarea
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('csvInput').focus();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                if (!document.getElementById('exportBtn').disabled) {
+                    exportData();
+                }
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message show ${type}`;
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.classList.add('hidden');
+                }, 4000);
+            }
+        }
+
+        function parseCSVData() {
+            const csvText = document.getElementById('csvInput').value;
+            if (!csvText.trim()) {
+                showMessage('❌ Please paste CSV data first', 'error');
                 return;
             }
 
-            showMessage('Loading data...', 'info');
-
             try {
-                let csvUrl = url;
-                
-                if (url.includes('docs.google.com/spreadsheets')) {
-                    if (url.includes('/d/')) {
-                        const sheetId = url.split('/d/')[1].split('/')[0];
-                        csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
-                    }
-                }
-
-                const response = await fetch(csvUrl);
-                if (!response.ok) throw new Error('Failed to fetch');
-                
-                const csv = await response.text();
-                const lines = csv.trim().split('\n');
-                
+                const lines = csvText.trim().split('\n');
                 if (lines.length < 2) throw new Error('CSV is empty');
 
-                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+                const headers = lines[0].split('\t').map(h => h.trim());
                 allData = [];
 
                 for (let i = 1; i < lines.length; i++) {
-                    if (lines[i].trim()) {
-                        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-                        
-                        // Parse Accounts column to get individual customers
-                        const accountsStr = values[3] || '';
-                        const accountsMap = {};
-                        
-                        if (accountsStr) {
-                            const parts = accountsStr.split(';');
-                            parts.forEach(part => {
-                                if (part.includes('=')) {
-                                    const [name, count] = part.split('=');
-                                    const customerName = name.trim();
-                                    const accountCount = parseInt(count.trim()) || 0;
-                                    accountsMap[customerName] = accountCount;
+                    if (!lines[i].trim()) continue;
+                    const values = lines[i].split('\t').map(v => v.trim());
+
+                    const customerAlias = values[0] || 'N/A';
+                    const templateName = values[1] || 'N/A';
+                    const totalAccounts = parseInt(values[2]) || 0;
+                    const accountsStr = values[3] || '';
+
+                    if (accountsStr.toLowerCase() === 'no accounts') {
+                        allData.push({
+                            'Customer Alias': 'N/A',
+                            'Template Name': templateName,
+                            'Account Count': 0,
+                            'Status': 'Inactive',
+                            'Customer Alias Parent': customerAlias
+                        });
+                    } else if (accountsStr.includes('=')) {
+                        const parts = accountsStr.split(';');
+                        parts.forEach(part => {
+                            if (part.includes('=')) {
+                                const [name, count] = part.split('=');
+                                const customerName = name.trim();
+                                const accountCount = parseInt(count.trim()) || 0;
+                                if (accountCount > 0) {
+                                    allData.push({
+                                        'Customer Alias': customerName,
+                                        'Template Name': templateName,
+                                        'Account Count': accountCount,
+                                        'Status': 'Active',
+                                        'Customer Alias Parent': customerAlias
+                                    });
                                 }
-                            });
-                        }
-                        
-                        // Create a record for each customer in the accounts
-                        if (Object.keys(accountsMap).length > 0) {
-                            Object.entries(accountsMap).forEach(([customer, count]) => {
-                                allData.push({
-                                    'Template Name': values[1] || 'N/A',
-                                    'Customer Alias': customer,
-                                    'Total Accounts': count,
-                                    'Status': count > 0 ? 'Active' : 'Inactive'
-                                });
-                            });
-                        }
+                            }
+                        });
                     }
                 }
 
                 updateStats();
-                populateFilters();
                 renderCharts();
                 filterData();
 
                 document.getElementById('statsContainer').classList.remove('hidden');
                 document.getElementById('chartsContainer').classList.remove('hidden');
-                showMessage(`✅ Loaded ${allData.length} records successfully!`, 'success');
+                document.getElementById('exportBtn').disabled = false;
 
+                showMessage(`✅ Successfully parsed ${allData.length} records!`, 'success');
             } catch (error) {
-                showMessage(`❌ Error: ${error.message}`, 'error');
+                showMessage(`❌ Error parsing CSV: ${error.message}`, 'error');
             }
         }
 
         function updateStats() {
-            const total = [...new Set(allData.map(d => d['Template Name']))].length;
-            const active = allData.filter(d => d['Total Accounts'] > 0).length;
-            const inactive = allData.filter(d => d['Total Accounts'] === 0).length;
-            const totalAccounts = allData.reduce((sum, d) => sum + d['Total Accounts'], 0);
+            const templates = [...new Set(allData.map(d => d['Template Name']))];
+            const active = templates.filter(t => allData.some(d => d['Template Name'] === t && d['Account Count'] > 0)).length;
+            const inactive = templates.length - active;
+            const total = allData.reduce((sum, d) => sum + d['Account Count'], 0);
 
-            document.getElementById('totalTemplates').textContent = total;
+            document.getElementById('totalTemplates').textContent = templates.length;
             document.getElementById('activeTemplates').textContent = active;
             document.getElementById('inactiveTemplates').textContent = inactive;
-            document.getElementById('totalAccounts').textContent = totalAccounts.toLocaleString();
-        }
-
-        function populateFilters() {
-            allCustomers = [...new Set(allData.map(d => d['Customer Alias']))].sort();
-            const customerSelect = document.getElementById('customerFilter');
-            customerSelect.innerHTML = '<option value="">-- All Customers --</option>';
-            allCustomers.forEach(customer => {
-                const option = document.createElement('option');
-                option.value = customer;
-                option.textContent = customer;
-                customerSelect.appendChild(option);
-            });
-
-            allTemplates = [...new Set(allData.map(d => d['Template Name']))].sort();
-            const templateSelect = document.getElementById('templateFilter');
-            templateSelect.innerHTML = '<option value="">-- All Templates --</option>';
-            allTemplates.forEach(template => {
-                const option = document.createElement('option');
-                option.value = template;
-                option.textContent = template;
-                templateSelect.appendChild(option);
-            });
+            document.getElementById('totalAccounts').textContent = total.toLocaleString();
         }
 
         function renderCharts() {
-            const selectedCustomer = document.getElementById('customerFilter').value;
-            const selectedTemplate = document.getElementById('templateFilter').value;
             const customerCount = document.getElementById('customerCountFilter').value;
             const templateCount = document.getElementById('templateCountFilter').value;
 
-            // Customer chart - aggregate by customer
+            // Customer chart
             const customerMap = {};
             allData.forEach(item => {
-                if (!selectedTemplate || item['Template Name'] === selectedTemplate) {
-                    const customer = item['Customer Alias'];
-                    const count = item['Total Accounts'];
-                    customerMap[customer] = (customerMap[customer] || 0) + count;
-                }
+                const customer = item['Customer Alias'];
+                const count = item['Account Count'];
+                customerMap[customer] = (customerMap[customer] || 0) + count;
             });
 
             let customers = Object.entries(customerMap).sort((a, b) => b[1] - a[1]);
-            const limit = customerCount === 'all' ? customers.length : parseInt(customerCount);
-            let filteredCustomers = customers.slice(0, limit);
-            
-            if (selectedCustomer) {
-                filteredCustomers = filteredCustomers.filter(c => c[0] === selectedCustomer);
-            }
+            const customerLimit = customerCount === 'all' ? customers.length : parseInt(customerCount);
+            customers = customers.slice(0, customerLimit);
 
-            if (filteredCustomers.length > 0) {
-                const maxCount = Math.max(...filteredCustomers.map(c => c[1]));
-                const html = filteredCustomers.map(([name, count]) => `
+            if (customers.length > 0) {
+                const maxCount = Math.max(...customers.map(c => c[1]));
+                const html = customers.map(([name, count]) => `
                     <div class="bar-item">
                         <div class="bar-label">${name}</div>
                         <div class="bar-container">
@@ -767,20 +752,14 @@ interactive-dashboard-UPDATED.html
             // Template chart
             const templateMap = {};
             allData.forEach(item => {
-                if (!selectedCustomer || item['Customer Alias'] === selectedCustomer) {
-                    const template = item['Template Name'];
-                    const count = item['Total Accounts'];
-                    templateMap[template] = (templateMap[template] || 0) + count;
-                }
+                const template = item['Template Name'];
+                const count = item['Account Count'];
+                templateMap[template] = (templateMap[template] || 0) + count;
             });
 
             let templates = Object.entries(templateMap).sort((a, b) => b[1] - a[1]);
             const templateLimit = templateCount === 'all' ? templates.length : parseInt(templateCount);
             templates = templates.slice(0, templateLimit);
-            
-            if (selectedTemplate) {
-                templates = templates.filter(t => t[0] === selectedTemplate);
-            }
 
             if (templates.length > 0) {
                 const maxCount = Math.max(...templates.map(t => t[1]));
@@ -800,17 +779,14 @@ interactive-dashboard-UPDATED.html
 
         function filterData() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-            
             let filtered = allData.filter(item => {
                 const matchesSearch = (
                     item['Customer Alias'].toLowerCase().includes(searchTerm) ||
                     item['Template Name'].toLowerCase().includes(searchTerm)
                 );
-
                 const matchesFilter = currentFilter === 'all' ||
-                    (currentFilter === 'active' && item['Total Accounts'] > 0) ||
-                    (currentFilter === 'inactive' && item['Total Accounts'] === 0);
-
+                    (currentFilter === 'active' && item['Account Count'] > 0) ||
+                    (currentFilter === 'inactive' && item['Account Count'] === 0);
                 return matchesSearch && matchesFilter;
             });
 
@@ -818,17 +794,11 @@ interactive-dashboard-UPDATED.html
                 filtered.sort((a, b) => {
                     let aVal = a[currentSort.field];
                     let bVal = b[currentSort.field];
-
                     if (typeof aVal === 'string') {
                         aVal = aVal.toLowerCase();
                         bVal = bVal.toLowerCase();
                     }
-
-                    if (currentSort.ascending) {
-                        return aVal > bVal ? 1 : -1;
-                    } else {
-                        return aVal < bVal ? 1 : -1;
-                    }
+                    return currentSort.ascending ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
                 });
             }
 
@@ -839,12 +809,12 @@ interactive-dashboard-UPDATED.html
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = data.map(item => `
                 <tr>
-                    <td>${item['Template Name']}</td>
                     <td>${item['Customer Alias']}</td>
-                    <td>${item['Total Accounts']}</td>
+                    <td>${item['Template Name']}</td>
+                    <td>${item['Account Count']}</td>
                     <td>
-                        <span class="badge ${item['Total Accounts'] > 0 ? 'badge-active' : 'badge-inactive'}">
-                            ${item['Total Accounts'] > 0 ? 'Active' : 'Inactive'}
+                        <span class="badge ${item['Account Count'] > 0 ? 'badge-active' : 'badge-inactive'}">
+                            ${item['Status']}
                         </span>
                     </td>
                 </tr>
@@ -860,9 +830,9 @@ interactive-dashboard-UPDATED.html
 
         function exportData() {
             try {
-                let csv = 'Template Name,Customer Alias,Total Accounts,Status\n';
+                let csv = 'Customer Alias,Template Name,Account Count,Status\n';
                 allData.forEach(item => {
-                    csv += `"${item['Template Name']}","${item['Customer Alias']}",${item['Total Accounts']},"${item['Status']}"\n`;
+                    csv += `"${item['Customer Alias']}","${item['Template Name']}",${item['Account Count']},"${item['Status']}"\n`;
                 });
 
                 const blob = new Blob([csv], { type: 'text/csv' });
@@ -877,15 +847,6 @@ interactive-dashboard-UPDATED.html
             }
         }
 
-        function showMessage(text, type) {
-            const div = document.getElementById('message');
-            div.textContent = text;
-            div.className = `message show ${type}`;
-            if (type !== 'error') {
-                setTimeout(() => div.classList.remove('show'), 3000);
-            }
-        }
-
         document.querySelectorAll('th[data-sort]').forEach(th => {
             th.addEventListener('click', () => {
                 const field = th.dataset.sort;
@@ -895,23 +856,10 @@ interactive-dashboard-UPDATED.html
                     currentSort.field = field;
                     currentSort.ascending = true;
                 }
-                
                 document.querySelectorAll('th .sort-icon').forEach(icon => icon.textContent = '▼');
                 th.querySelector('.sort-icon').textContent = currentSort.ascending ? '▲' : '▼';
-                
                 filterData();
             });
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'l') {
-                e.preventDefault();
-                document.getElementById('csvUrl').focus();
-            }
-            if (e.ctrlKey && e.key === 'e') {
-                e.preventDefault();
-                exportData();
-            }
         });
     </script>
 </body>
